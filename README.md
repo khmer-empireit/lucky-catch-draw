@@ -262,3 +262,4 @@ sudo supervisorctl restart lucky-catch-draw-worker:*
   disks at a shared filesystem or S3-compatible store.
 - No automated email notifications (e.g. "you won") are sent — the admin shares results
   manually via the printable report or by sharing the campaign's draw history.
+# lucky-catch-draw
