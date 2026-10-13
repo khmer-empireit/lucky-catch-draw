@@ -36,7 +36,12 @@ class AuditLogsTable
                     ->formatStateUsing(fn (?string $state) => $state ? class_basename($state) : '—'),
                 TextColumn::make('details')
                     ->label('Details')
-                    ->formatStateUsing(fn (?array $state) => $state ? json_encode($state) : '—')
+                    // ->formatStateUsing() would receive each array value one at a
+                    // time here (Filament treats an array column state as a list
+                    // of badges/tags) — ->getStateUsing() replaces state
+                    // resolution entirely so the whole array is encoded as one
+                    // string before Filament ever iterates it.
+                    ->getStateUsing(fn (AuditLog $record): string => $record->details ? json_encode($record->details) : '—')
                     ->limit(80)
                     ->wrap()
                     ->toggleable(),

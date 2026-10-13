@@ -7,6 +7,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class AuditLogsRelationManager extends RelationManager
@@ -34,6 +35,16 @@ class AuditLogsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            // auditLogs() returns a plain Eloquent Builder, not a real
+            // Relation. Filament's relationship-based query resolution
+            // (Table::getRelationshipQuery()) unconditionally calls
+            // ->getQuery() on whatever getRelationship() returns and expects
+            // an Eloquent Builder back; a Relation's getQuery() does return
+            // one, but a Builder's getQuery() unwraps one level further to
+            // the raw query builder and breaks that contract. Setting an
+            // explicit ->query() here takes priority (see Table::getQuery())
+            // and bypasses that broken path entirely.
+            ->query(fn (): Builder => $this->getOwnerRecord()->auditLogs())
             ->recordTitleAttribute('action')
             ->defaultSort('created_at', 'desc')
             ->columns([
@@ -45,7 +56,9 @@ class AuditLogsRelationManager extends RelationManager
                     ->placeholder('System'),
                 TextColumn::make('details')
                     ->label('Details')
-                    ->formatStateUsing(fn (?array $state) => $state ? json_encode($state) : '—')
+                    // See AuditLogsTable::configure() for why this must be
+                    // ->getStateUsing(), not ->formatStateUsing().
+                    ->getStateUsing(fn (AuditLog $record): string => $record->details ? json_encode($record->details) : '—')
                     ->limit(60)
                     ->wrap(),
                 TextColumn::make('ip')->label('IP')->toggleable(),
