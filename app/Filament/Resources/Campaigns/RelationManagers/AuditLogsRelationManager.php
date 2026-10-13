@@ -2,12 +2,6 @@
 
 namespace App\Filament\Resources\Campaigns\RelationManagers;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -17,38 +11,35 @@ class AuditLogsRelationManager extends RelationManager
 {
     protected static string $relationship = 'auditLogs';
 
+    protected static ?string $title = 'Audit';
+
     public function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                TextInput::make('action')
-                    ->required()
-                    ->maxLength(255),
-            ]);
+        return $schema->components([]);
     }
 
     public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('action')
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('action')
-                    ->searchable(),
+                    ->badge()
+                    ->color('gray'),
+                TextColumn::make('actor.name')
+                    ->label('Actor')
+                    ->placeholder('System'),
+                TextColumn::make('details')
+                    ->label('Details')
+                    ->formatStateUsing(fn (?array $state) => $state ? json_encode($state) : '—')
+                    ->limit(60)
+                    ->wrap(),
+                TextColumn::make('ip')->label('IP')->toggleable(),
+                TextColumn::make('created_at')->dateTime('M j, g:ia')->label('When'),
             ])
-            ->filters([
-                //
-            ])
-            ->headerActions([
-                CreateAction::make(),
-            ])
-            ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->headerActions([])
+            ->recordActions([])
+            ->toolbarActions([]);
     }
 }

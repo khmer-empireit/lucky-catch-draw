@@ -17,7 +17,11 @@ class DrawResource extends Resource
 {
     protected static ?string $model = Draw::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTrophy;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Draws & Winners';
+
+    protected static ?string $navigationLabel = 'Winner History';
 
     public static function infolist(Schema $schema): Schema
     {

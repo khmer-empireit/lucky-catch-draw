@@ -4,8 +4,13 @@ namespace App\Filament\Resources\Campaigns;
 
 use App\Filament\Resources\Campaigns\Pages\CreateCampaign;
 use App\Filament\Resources\Campaigns\Pages\EditCampaign;
+use App\Filament\Resources\Campaigns\Pages\ImportWizard;
 use App\Filament\Resources\Campaigns\Pages\ListCampaigns;
 use App\Filament\Resources\Campaigns\Pages\ViewCampaign;
+use App\Filament\Resources\Campaigns\RelationManagers\AuditLogsRelationManager;
+use App\Filament\Resources\Campaigns\RelationManagers\DrawsRelationManager;
+use App\Filament\Resources\Campaigns\RelationManagers\ImportsRelationManager;
+use App\Filament\Resources\Campaigns\RelationManagers\ParticipantsRelationManager;
 use App\Filament\Resources\Campaigns\Schemas\CampaignForm;
 use App\Filament\Resources\Campaigns\Schemas\CampaignInfolist;
 use App\Filament\Resources\Campaigns\Tables\CampaignsTable;
@@ -23,6 +28,8 @@ class CampaignResource extends Resource
     protected static ?string $model = Campaign::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Campaigns';
 
     public static function form(Schema $schema): Schema
     {
@@ -42,7 +49,10 @@ class CampaignResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ParticipantsRelationManager::class,
+            ImportsRelationManager::class,
+            DrawsRelationManager::class,
+            AuditLogsRelationManager::class,
         ];
     }
 
@@ -53,6 +63,7 @@ class CampaignResource extends Resource
             'create' => CreateCampaign::route('/create'),
             'view' => ViewCampaign::route('/{record}'),
             'edit' => EditCampaign::route('/{record}/edit'),
+            'import' => ImportWizard::route('/{record}/import'),
         ];
     }
 

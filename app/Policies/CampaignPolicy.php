@@ -56,6 +56,16 @@ class CampaignPolicy
             && $campaign->winnersRemaining() > 0;
     }
 
+    /**
+     * Any active, authenticated user may watch the draw screen once a
+     * campaign has left draft — the POST that actually selects a winner is
+     * gated separately by the `draw` ability.
+     */
+    public function viewDrawScreen(User $user, Campaign $campaign): bool
+    {
+        return $campaign->status !== CampaignStatus::Draft;
+    }
+
     public function draw(User $user, Campaign $campaign): bool
     {
         return $user->canManageCampaigns();
