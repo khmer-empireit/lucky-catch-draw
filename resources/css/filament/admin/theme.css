@@ -1,0 +1,29 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', 'Kantumruy Pro', ui-sans-serif, system-ui, sans-serif;
+}
+
+.fi-logo {
+    background-image: linear-gradient(90deg, #f2b33d, #ff6b2c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+}
+
+.fi-sidebar-nav-groups > * + * {
+    border-top-color: color-mix(in srgb, #f2b33d 15%, transparent);
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-button {
+    background-image: linear-gradient(90deg, color-mix(in srgb, #f2b33d 18%, transparent), color-mix(in srgb, #ff6b2c 10%, transparent));
+}
+
+.fi-ta-empty-state-icon-ctn,
+.fi-wi-stats-overview-stat {
+    background-image: linear-gradient(135deg, color-mix(in srgb, #f2b33d 6%, white), color-mix(in srgb, #ff6b2c 3%, white));
+}

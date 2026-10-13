@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\CampaignStatus;
 use Database\Factories\CampaignFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -80,5 +81,23 @@ class Campaign extends Model
     public function winnersRemaining(): int
     {
         return max(0, $this->winners_to_select - $this->validDraws()->count());
+    }
+
+    /**
+     * Every audit entry that touches this campaign, whether logged directly
+     * against the campaign or against one of its imports/participants/draws
+     * (every Auditor::log() call for those embeds `campaign_id` in details).
+     * Not a true Eloquent relation, but Filament's relation managers accept
+     * any Builder here.
+     */
+    public function auditLogs(): Builder
+    {
+        return AuditLog::query()
+            ->where(function (Builder $query) {
+                $query->where(function (Builder $direct) {
+                    $direct->where('auditable_type', self::class)->where('auditable_id', $this->id);
+                })->orWhere('details->campaign_id', $this->id);
+            })
+            ->latest('created_at');
     }
 }
