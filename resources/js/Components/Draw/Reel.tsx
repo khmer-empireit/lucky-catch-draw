@@ -17,10 +17,13 @@ interface ReelProps {
 function buildReel(sample: SampleParticipant[], winner: WinnerPayload): { id: string; name: string; profile_url: string }[] {
     const pool = sample.length > 0 ? sample : [{ id: winner.id, name: winner.name, profile_url: winner.profile_url }];
 
+    // A running counter (not the per-call array index) keeps every filler's
+    // key globally unique across both pick() calls below.
+    let sequence = 0;
     const pick = (count: number) =>
-        Array.from({ length: count }, (_, i) => {
+        Array.from({ length: count }, () => {
             const participant = pool[Math.floor(Math.random() * pool.length)];
-            return { id: `filler-${i}-${participant.id}`, name: participant.name, profile_url: participant.profile_url };
+            return { id: `filler-${sequence++}-${participant.id}`, name: participant.name, profile_url: participant.profile_url };
         });
 
     return [
@@ -34,6 +37,7 @@ export default function Reel({ sample, winner, durationMs = REEL_DURATION_SECOND
     const items = useMemo(() => buildReel(sample, winner), [sample, winner]);
     const landingIndex = FILLER_COUNT;
     const targetOffset = landingIndex * CARD_HEIGHT;
+    const finalY = -(targetOffset - CARD_HEIGHT);
 
     return (
         <div className="relative mx-auto h-[340px] w-full max-w-2xl overflow-hidden">
@@ -44,8 +48,15 @@ export default function Reel({ sample, winner, durationMs = REEL_DURATION_SECOND
             <motion.div
                 className="flex flex-col gap-4"
                 initial={{ y: 0 }}
-                animate={{ y: -(targetOffset - CARD_HEIGHT) }}
-                transition={{ duration: durationMs / 1000, ease: [0.1, 0.4, 0.1, 1] }}
+                // Slot-machine feel: spin fast and steady for most of the
+                // duration, then decelerate hard into the exact landing spot
+                // only in the final stretch — not an immediate soft stop.
+                animate={{ y: [0, finalY * 0.82, finalY] }}
+                transition={{
+                    duration: durationMs / 1000,
+                    times: [0, 0.72, 1],
+                    ease: ['easeIn', 'easeOut'],
+                }}
                 style={{ paddingTop: 340 / 2 - CARD_HEIGHT / 2 }}
             >
                 {items.map((item, index) => (

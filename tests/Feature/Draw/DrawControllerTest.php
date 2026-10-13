@@ -17,6 +17,14 @@ beforeEach(function () {
     $this->manager->assignRole(RoleName::CampaignManager->value);
 });
 
+it('redirects a guest to the admin login page instead of crashing', function () {
+    $campaign = Campaign::factory()->ready()->create();
+
+    $response = $this->get("/draw/{$campaign->id}");
+
+    $response->assertRedirect(route('filament.admin.auth.login'));
+});
+
 it('renders the draw screen with no participant pii beyond name and url', function () {
     $campaign = Campaign::factory()->ready()->create(['winners_to_select' => 2]);
     Participant::factory()->count(5)->create([
