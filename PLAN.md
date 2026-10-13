@@ -49,8 +49,9 @@ Public-to-authenticated (web guard, same session as Filament):
 - [ ] Stage 4 — Inertia/React Draw Screen + print report
 - [x] Stage 5 — Excel export safety (ExcelSafe on every export), private disk for
       uploads/exports, centralized DrawNotAllowedException handling
-- [ ] Stage 6 — Pest test suite (60 tests passing across Stages 1-5; remaining: a
-      consolidated authorization matrix test for viewer/campaign_manager/super_admin)
+- [x] Stage 6 — Pest test suite: 71 tests passing (DrawService, import pipeline, Filament
+      admin smoke + Import Wizard Livewire flow, DrawController, Excel export escaping,
+      full authorization matrix)
 - [ ] Stage 7 — seeders, README, full end-to-end walkthrough
 
 Commits land after each stage completes and tests for that stage pass.
