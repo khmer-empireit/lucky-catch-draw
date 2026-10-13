@@ -43,12 +43,14 @@ Public-to-authenticated (web guard, same session as Filament):
 
 ## Stage checklist
 - [x] Stage 0 — inspect, scaffold, plan
-- [ ] Stage 1 — migrations, models, enums, factories, policies, Auditor service
-- [ ] Stage 2 — Filament panel branding, resources, import wizard, dashboard widgets
-- [ ] Stage 3 — DrawService (server-authoritative selection)
+- [x] Stage 1 — migrations, models, enums, factories, policies, Auditor service
+- [x] Stage 2 — Filament panel branding, resources, import wizard, dashboard widgets
+- [x] Stage 3 — DrawService (server-authoritative selection)
 - [ ] Stage 4 — Inertia/React Draw Screen + print report
 - [ ] Stage 5 — Excel export safety, auth hardening, exception handling
-- [ ] Stage 6 — Pest test suite
+- [ ] Stage 6 — Pest test suite (partially done alongside Stages 1-3: DrawService, import
+      pipeline, and Filament admin already have coverage; remaining: policies/authorization
+      matrix, export escaping)
 - [ ] Stage 7 — seeders, README, full end-to-end walkthrough
 
 Commits land after each stage completes and tests for that stage pass.
