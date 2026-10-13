@@ -1,5 +1,13 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', 'Kantumruy Pro', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
 .fi-page-header-main-ctn {
     row-gap: 10px;
     padding-block: 10px;
