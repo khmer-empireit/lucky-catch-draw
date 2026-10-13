@@ -3,9 +3,33 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
-@source '../**/*.js';
+@source '../**/*.tsx';
+@source '../**/*.ts';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Plus Jakarta Sans', 'Kantumruy Pro', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-stage-bg: #0b0f1a;
+    --color-gold-400: #f2b33d;
+    --color-gold-500: #f0a830;
+    --color-orange-500: #ff6b2c;
+}
+
+@layer base {
+    html,
+    body {
+        @apply bg-stage-bg antialiased;
+    }
+}
+
+.gold-gradient-text {
+    background-image: linear-gradient(90deg, var(--color-gold-400), var(--color-orange-500));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.gold-gradient-bg {
+    background-image: linear-gradient(90deg, var(--color-gold-400), var(--color-orange-500));
 }
