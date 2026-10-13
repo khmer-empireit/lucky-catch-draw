@@ -187,6 +187,10 @@ class ImportWizard extends Page
         $this->headers = array_map(fn ($h) => (string) $h, $headers);
         $this->data['original_name'] = $originalName;
         $this->data['sha256'] = $sha256;
+        // The FileUpload field becomes invisible from step 2 onward, and
+        // Filament excludes hidden components from getState() — so the
+        // stored path is stashed under a plain (non-component) data key.
+        $this->data['stored_path'] = $relativePath;
 
         $guess = ColumnMapper::guess($this->headers);
         $this->data['map_name'] = $guess['name'] ?? null;
@@ -226,7 +230,7 @@ class ImportWizard extends Page
         $import = Import::create([
             'campaign_id' => $this->getRecord()->id,
             'original_file_name' => $this->data['original_name'],
-            'stored_path' => $state['file'],
+            'stored_path' => $this->data['stored_path'],
             'file_sha256' => $this->data['sha256'],
             'status' => ImportStatus::Mapped,
             'column_map' => $columnMap,
