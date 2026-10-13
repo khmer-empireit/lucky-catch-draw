@@ -52,6 +52,27 @@ Public-to-authenticated (web guard, same session as Filament):
 - [x] Stage 6 — Pest test suite: 71 tests passing (DrawService, import pipeline, Filament
       admin smoke + Import Wizard Livewire flow, DrawController, Excel export escaping,
       full authorization matrix)
-- [ ] Stage 7 — seeders, README, full end-to-end walkthrough
+- [x] Stage 7 — demo seeder, README (local setup, queue worker, Ubuntu VPS deploy w/
+      Nginx + PHP-FPM + Supervisor + scheduler cron), and a full browser-driven
+      end-to-end walkthrough (create campaign → upload Excel → map → validate → review
+      → confirm & import → confirm participant list → draw 3 winners, including a
+      genuine mid-countdown page reload that recovered correctly → void → redraw →
+      export → print), all with zero console/page errors.
 
 Commits land after each stage completes and tests for that stage pass.
+
+## Bugs found only by browser testing (not caught by Pest/Livewire tests)
+1. Inertia protocol mismatch: `@inertiajs/react` npm resolved to v3.9.1, but
+   `inertiajs/inertia-laravel` was pinned to `^2.0`, whose Blade root view renders the
+   v2-style `<div data-page="...">` bootstrap the v3 client no longer reads (it looks
+   for `<script data-page="...">`). Fixed by upgrading the Composer package to `^3.0`.
+2. Guest requests to any custom web route (`/draw/*`, `/draws/*/print`) crashed with a
+   500 "Route [login] not defined" instead of redirecting, because Laravel's default
+   `auth` middleware target doesn't exist in an app with no standalone login route.
+   Fixed via `Authenticate::redirectUsing()` pointing at the Filament login page.
+3. The reel's easing curve front-loaded deceleration, so it visually "stopped" within
+   the first second instead of spinning fast and decelerating at the end. Replaced with
+   a two-phase keyframe animation (`ease: ['easeIn', 'easeOut']`).
+4. Duplicate React keys in the reel's filler cards (two `pick()` calls both started
+   their local index at 0), causing a silent React warning and undefined rendering
+   behavior. Fixed with a single running counter shared across both calls.
