@@ -1,29 +1,124 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 
-@source '../../../../app/Filament/**/*';
-@source '../../../../resources/views/filament/**/*';
-
-@theme {
-    --font-sans: 'Plus Jakarta Sans', 'Kantumruy Pro', ui-sans-serif, system-ui, sans-serif;
+.fi-page-header-main-ctn {
+    row-gap: 10px;
+    padding-block: 10px;
 }
 
-.fi-logo {
-    background-image: linear-gradient(90deg, #f2b33d, #ff6b2c);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-weight: 800;
+.fi-page-content {
+    row-gap: 10px;
 }
 
-.fi-sidebar-nav-groups > * + * {
-    border-top-color: color-mix(in srgb, #f2b33d 15%, transparent);
+.fi-ta-ctn {
+    & .fi-ta-filters {
+        row-gap: 6px;
+    }
 }
 
-.fi-sidebar-item.fi-active .fi-sidebar-item-button {
-    background-image: linear-gradient(90deg, color-mix(in srgb, #f2b33d 18%, transparent), color-mix(in srgb, #ff6b2c 10%, transparent));
+.fi-sc {
+    &.fi-sc-has-gap {
+        gap: 10px;
+    }
 }
 
-.fi-ta-empty-state-icon-ctn,
 .fi-wi-stats-overview-stat {
-    background-image: linear-gradient(135deg, color-mix(in srgb, #f2b33d 6%, white), color-mix(in srgb, #ff6b2c 3%, white));
+    padding: 12px;
+    border-radius: 0.5rem;
+
+    & .fi-wi-stats-overview-stat-content {
+        align-items: center;
+    }
+
+    & .fi-wi-stats-overview-stat-label-ctn {
+        justify-content: center;
+    }
+
+    & .fi-wi-stats-overview-stat-value {
+        text-align: center;
+        width: 100%;
+    }
+
+    & .fi-wi-stats-overview-stat-description {
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+    }
+}
+
+.fi-section {
+    &:not(.fi-section-not-contained) {
+        &:not(.fi-divided) {
+            & > .fi-section-content-ctn > .fi-section-content {
+                padding: 12px;
+            }
+        }
+    }
+}
+
+.fi-ta-ctn {
+    & .fi-ta-header {
+        padding: 12px;
+    }
+}
+
+.fi-main {
+    padding-inline: calc(var(--spacing) * 4) !important;
+}
+
+.fi-sidebar-nav {
+    padding-inline: calc(var(--spacing) * 4);
+    padding-block: calc(var(--spacing) * 4);
+}
+
+.fi-sidebar-nav-groups {
+    row-gap: calc(var(--spacing) * 2);
+}
+
+/* ── StatsWidget group separators ── */
+.widget-bg-agents,
+.widget-bg-bets,
+.widget-bg-lottery {
+    /* border-radius: 0.75rem; */
+    padding: 8px;
+}
+
+.widget-bg-bets {
+    margin-top: 8px;
+    /* border-top: 2px solid rgba(0, 0, 0, 0.06); */
+}
+
+.widget-bg-lottery {
+    /* margin-top: 8px; */
+    /* border-top: 2px solid rgba(0, 0, 0, 0.06); */
+}
+
+.dark .widget-bg-bets,
+.dark .widget-bg-lottery {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Stat card colors per widget group ── */
+.widget-bg-bets .fi-wi-stats-overview-stat     { background: rgba(6, 182, 212, 0.15); }
+.widget-bg-lottery .fi-wi-stats-overview-stat  { background: rgba(239, 68, 68, 0.15); }
+.widget-bg-agents .fi-wi-stats-overview-stat   { background: rgba(168, 85, 247, 0.15); }
+
+.dark .widget-bg-bets .fi-wi-stats-overview-stat    { background: rgba(6, 182, 212, 0.22); }
+.dark .widget-bg-lottery .fi-wi-stats-overview-stat { background: rgba(239, 68, 68, 0.22); }
+.dark .widget-bg-agents .fi-wi-stats-overview-stat  { background: rgba(168, 85, 247, 0.22); }
+
+.fi-wi-stats-overview-stat {
+    & .fi-wi-stats-overview-stat-label {
+        color: darkblue;
+        font-size: 15px;
+        font-weight: 600;
+    }
+}
+
+.fi-sc {
+    & > .fi-grid-col {
+        & > .fi-sc-component {
+            height: 100%;
+            align-content: flex-end;
+        }
+    }
 }
