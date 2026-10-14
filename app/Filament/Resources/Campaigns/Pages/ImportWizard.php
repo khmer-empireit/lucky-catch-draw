@@ -157,13 +157,12 @@ class ImportWizard extends Page
             return;
         }
 
+        // Re-uploading the exact same file into the same campaign is allowed:
+        // any rows that were already imported get caught again downstream by
+        // ValidateImportJob's duplicate-against-existing-participants check,
+        // so nothing can actually double-import — this is just not blocked
+        // at the file level anymore.
         $sha256 = FileInspector::sha256($absolutePath);
-
-        if (Import::where('campaign_id', $this->getRecord()->id)->where('file_sha256', $sha256)->exists()) {
-            $this->rejectUpload($relativePath, 'This exact file has already been imported into this campaign.');
-
-            return;
-        }
 
         $reader = SpreadsheetReaderFactory::forFile($absolutePath, $originalName);
         $reader->open($absolutePath);

@@ -111,14 +111,41 @@ it('detects duplicates against existing campaign participants, not just within t
     expect($import->valid_rows)->toBe(0);
 });
 
-it('blocks re-importing the exact same file into the same campaign via sha256', function () {
+it('allows re-importing the exact same file into the same campaign', function () {
     $campaign = Campaign::factory()->create();
     $rows = [['Participant Name', 'Profile URL'], ['A', 'https://facebook.com/a']];
 
-    makeImportFor($campaign, $rows, ['name' => 0, 'profile_url' => 1], 'imports/one.xlsx');
+    $first = makeImportFor($campaign, $rows, ['name' => 0, 'profile_url' => 1], 'imports/one.xlsx');
+    $second = makeImportFor($campaign, $rows, ['name' => 0, 'profile_url' => 1], 'imports/two.xlsx');
 
-    expect(fn () => makeImportFor($campaign, $rows, ['name' => 0, 'profile_url' => 1], 'imports/two.xlsx'))
-        ->toThrow(\Illuminate\Database\QueryException::class);
+    expect($second->id)->not->toBe($first->id);
+    expect($second->file_sha256)->toBe($first->file_sha256);
+});
+
+it('still catches every row as a duplicate when the same file is validated twice for one campaign', function () {
+    $campaign = Campaign::factory()->create();
+    $rows = [
+        ['Participant Name', 'Profile URL'],
+        ['A', 'https://facebook.com/a'],
+        ['B', 'https://facebook.com/b'],
+    ];
+
+    $first = makeImportFor($campaign, $rows, ColumnMapper::guess($rows[0]), 'imports/one.xlsx');
+    (new ValidateImportJob($first->id))->handle();
+    (new CommitImportJob($first->id))->handle(app(\App\Services\Audit\Auditor::class));
+
+    expect(Participant::where('campaign_id', $campaign->id)->count())->toBe(2);
+
+    // Re-uploading the identical file is no longer blocked at the file
+    // level, but row-level duplicate detection against the participants
+    // already committed still catches it — nothing gets double-imported.
+    $second = makeImportFor($campaign, $rows, ColumnMapper::guess($rows[0]), 'imports/two.xlsx');
+    (new ValidateImportJob($second->id))->handle();
+    $second->refresh();
+
+    expect($second->valid_rows)->toBe(0);
+    expect($second->duplicate_rows)->toBe(2);
+    expect(Participant::where('campaign_id', $campaign->id)->count())->toBe(2);
 });
 
 it('allows the same file to be imported into a different campaign', function () {

@@ -86,7 +86,7 @@ it('walks a campaign manager through upload, mapping, validation, review and com
     expect($import->fresh()->status)->toBe(ImportStatus::Imported);
 });
 
-it('rejects uploading the same file twice into the same campaign', function () {
+it('allows uploading the same file twice into the same campaign', function () {
     $campaign = Campaign::factory()->create();
     $rows = [
         ['Participant Name', 'Profile URL'],
@@ -97,14 +97,29 @@ it('rejects uploading the same file twice into the same campaign', function () {
     Livewire::test(ImportWizard::class, ['record' => $campaign->getKey()])
         ->set('data.file', $firstUpload)
         ->call('goToMapping')
-        ->call('startValidation');
+        ->call('startValidation')
+        ->call('goToReview')
+        ->call('confirmImport');
+
+    expect(\App\Models\Import::where('campaign_id', $campaign->id)->count())->toBe(1);
+    expect(Participant::where('campaign_id', $campaign->id)->count())->toBe(1);
 
     $secondUpload = buildXlsxUpload($rows);
     $component = Livewire::test(ImportWizard::class, ['record' => $campaign->getKey()])
         ->set('data.file', $secondUpload)
         ->call('goToMapping');
 
-    $component->assertSet('step', 1);
+    // The second upload proceeds past step 1 (no file-level block)...
+    $component->assertSet('step', 2);
+    $component->call('startValidation');
+
+    expect(\App\Models\Import::where('campaign_id', $campaign->id)->count())->toBe(2);
+
+    // ...but its one row is still caught as a duplicate against the
+    // participant already committed from the first import.
+    $import = \App\Models\Import::where('campaign_id', $campaign->id)->latest('id')->first();
+    expect($import->duplicate_rows)->toBe(1);
+    expect($import->valid_rows)->toBe(0);
 });
 
 it('lets the reviewer exclude a valid row before confirming the import', function () {
