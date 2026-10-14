@@ -23,8 +23,6 @@ return new class extends Migration
             $table->unsignedTinyInteger('progress')->default(0);
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
-
-            $table->unique(['campaign_id', 'file_sha256']);
         });
     }
 
